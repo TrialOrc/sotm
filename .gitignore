@@ -1,0 +1,16 @@
+# Saved games
+*.sav
+
+# Cache
+__pycache__/
+*.pyc
+
+# VSCode
+.vscode/
+
+# Extra data files
+Mental-State.psd
+menu_background_og.png
+menu_background_old.png
+menu_background_sm.png
+mountain.txt

@@ -41,7 +41,7 @@ class Fighter(BaseComponent):
 
         entity_factories.corpse.spawn(
             self.parent.gamemap, self.parent.x, self.parent.y
-        ).name = f"reamains of {self.parent.name}"
+        ).name = f"remains of {self.parent.name}"
         self.parent.gamemap.entities.remove(self.parent)
 
         """self.parent.char = "%"
@@ -52,6 +52,8 @@ class Fighter(BaseComponent):
         self.parent.render_order = RenderOrder.CORPSE"""
 
         self.engine.message_log.add_message(death_message, death_message_color)
+
+        self.engine.player.level.add_xp(self.parent.level.xp_given)
 
     def heal(self, amount: int) -> int:
         if self.hp == self.max_hp:

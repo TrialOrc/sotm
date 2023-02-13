@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Optional, Tuple, TYPE_CHECKING
 import numpy as np
+import random
 
 import color
 import exceptions
@@ -172,7 +173,8 @@ class MeleeAction(ActionWithDirection):
         if not target:
             raise exceptions.Impossible("Nothing to attack.")
 
-        damage = self.entity.fighter.power - target.fighter.defense
+        damage_dealt = random.randint(0, self.entity.fighter.power + 1)
+        damage_received = max(0, damage_dealt - target.fighter.defense)
 
         attack_desc = f"{self.entity.name.capitalize()} attacks {target.name}"
         if self.entity is self.engine.player:
@@ -180,16 +182,21 @@ class MeleeAction(ActionWithDirection):
         else:
             attack_color = color.enemy_atk
         
-        if damage > 0:
+        if damage_dealt == 0:
             self.engine.message_log.add_message(
-                f"{attack_desc} for {damage} hp.", attack_color
+                f"{attack_desc} but misses.", attack_color
                 )
-
-            target.fighter.hp -= damage
         else:
-            self.engine.message_log.add_message(
-                f"{attack_desc} but does no damage.", attack_color
-                )
+            if damage_received > 0:
+                self.engine.message_log.add_message(
+                    f"{attack_desc} for {damage_received} hp.", attack_color
+                    )
+
+                target.fighter.hp -= damage_received
+            else:
+                self.engine.message_log.add_message(
+                    f"{attack_desc} but does no damage.", attack_color
+                    )
 
 
 class MovementAction(ActionWithDirection):

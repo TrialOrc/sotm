@@ -19,7 +19,7 @@ import input_handlers
 
 
 # Load the background image and remove the alpha channel.
-background_image = Image.open(Path("data/menu_background_sm_2.png"))
+background_image = Image.open(Path("data/menu_background.png"))
 if background_image.format != "RGB":
     background_image = background_image.convert("RGB")
 

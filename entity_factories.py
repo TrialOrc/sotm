@@ -2,6 +2,7 @@ from components.ai import HostileEnemy, NoAI, HauntedTree
 from components import consumable
 from components.fighter import Fighter
 from components.inventory import Inventory
+from components.level import Level
 from entity import Actor, Item, Trap
 import color
 
@@ -12,6 +13,7 @@ player = Actor(
     ai_cls=HostileEnemy,
     fighter=Fighter(hp=30, defense=2, power=5),
     inventory=Inventory(capacity=26),
+    level=Level(level_up_base=200)
 )
 
 orc = Actor(
@@ -21,6 +23,7 @@ orc = Actor(
     ai_cls=HostileEnemy,
     fighter=Fighter(hp=10, defense=0, power=3),
     inventory=Inventory(capacity=0),
+    level=Level(xp_given=35),
 )
 troll = Actor(
     char="T",
@@ -29,6 +32,7 @@ troll = Actor(
     ai_cls=HostileEnemy,
     fighter=Fighter(hp=16, defense=1, power=4),
     inventory=Inventory(capacity=0),
+    level=Level(xp_given=100),
 )
 rubberduck = Actor(
     char="d",
@@ -37,6 +41,7 @@ rubberduck = Actor(
     ai_cls=NoAI,
     fighter=Fighter(hp=1, defense=0, power=0),
     inventory=Inventory(capacity=0),
+    level=Level(xp_given=0),
 ).blocks_movement = False
 
 hauntedtree = Trap(
