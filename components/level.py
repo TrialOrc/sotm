@@ -58,6 +58,8 @@ class Level(BaseComponent):
 
         self.engine.message_log.add_message("Your health improves!")
 
+        self.increase_level
+
     def increase_power(self, amount: int = 1) -> None:
         self.parent.fighter.power += amount
 
@@ -65,7 +67,7 @@ class Level(BaseComponent):
 
         self.increase_level()
 
-    def increase_defence(self, amount: int = 1) -> None:
+    def increase_defense(self, amount: int = 1) -> None:
         self.parent.fighter.defense += amount
 
         self.engine.message_log.add_message("Your movements are getting swifter!")
