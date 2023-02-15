@@ -1,20 +1,25 @@
 from __future__ import annotations
 
 import random
-from typing import Dict, Iterator, List, Tuple, TYPE_CHECKING
+from typing import Any, Dict, Iterator, List, Tuple, TYPE_CHECKING
 
 # import numpy as np
 
+import numpy as np
+import scipy.signal  # type: ignore
 import tcod
 
 import entity_factories
 from game_map import GameMap
+import noise_factories
 import tile_types
+
 
 
 if TYPE_CHECKING:
     from engine import Engine
     from entity import Entity
+    from numpy.typing import NDArray
 
 
 # (floor number, number of items/monsters)
@@ -44,6 +49,11 @@ enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
     5: [(entity_factories.troll, 30)],
     7: [(entity_factories.troll, 60)],
 }
+
+INITIAL_CHANCE = 0.42  # Initial wall chance.
+INITIAL_RANGE = INITIAL_CHANCE / 2
+INITIAL_MIN = 0.5 - INITIAL_RANGE
+INITIAL_MAX = 0.5 + INITIAL_RANGE
 
 
 def get_max_value_for_floor(
@@ -163,6 +173,23 @@ def tunnel_between(
         yield x, y
 
 
+def convolve(tiles: NDArray[Any], wall_rule: int = 5) -> NDArray[np.bool_]:
+    """
+    from: https://github.com/libtcod/python-tcod/blob/main/examples/cavegen.py
+    
+    Return the next step of the cave generation algorithm.
+
+    `tiles` is the input array. (0: wall, 1: floor)
+
+    If the 3x3 area around a tile (including itself) has `wall_rule` number of
+    walls then the tile will become a wall.
+    """
+    # Use convolve2d, the 2nd input is a 3x3 ones array.
+    neighbors: NDArray[Any] = scipy.signal.convolve2d(tiles == 0, [[1, 1, 1], [1, 1, 1], [1, 1, 1]], "same")
+    next_tiles: NDArray[np.bool_] = neighbors < wall_rule  # Apply the wall rule.
+    return next_tiles
+
+
 def generate_dungeon(
     max_rooms: int,
     room_min_size: int,
@@ -214,5 +241,44 @@ def generate_dungeon(
 
         # Finally, append the new room to the list.
         rooms.append(new_room)
+
+    return dungeon
+
+
+def generate_overworld(
+    map_width: int,
+    map_height: int,
+    engine: Engine,
+) -> GameMap:
+    """Generate a new dungeon map."""
+    player = engine.player
+    dungeon = GameMap(engine, map_width, map_height, entities=[player])
+
+    noise_map = noise_factories.noise_simplex_fbm[tcod.noise.grid(shape=(map_width, map_height), scale=0.25, indexing="ij")]
+    noise_map = (noise_map + 1) * 0.5
+    noise_map: NDArray[np.bool_] = np.all([noise_map <= INITIAL_MAX, noise_map >= INITIAL_MIN], axis=0)
+    noise_map= convolve(noise_map, wall_rule=6)
+
+    # Set tiles to `tile_types.tree` where `noise_map_bool` is False
+    dungeon.tiles[~noise_map] = tile_types.tree
+
+    # Find all floor tiles
+    floor_coords = np.transpose(np.where(dungeon.tiles == tile_types.floor))
+    floor_coords = np.ravel_multi_index(floor_coords.T, dungeon.tiles.shape)
+    
+    # Select a random floor tile and place the player there
+    player_coord = np.random.choice(floor_coords)
+
+    index = np.random.choice(floor_coords)
+    player_coord = np.unravel_index(index, dungeon.tiles.shape)
+    player.place(*player_coord, dungeon)
+
+    # TODO: Add initial snow fall. Should be a noise array with values from 0-7. Should only cover tile_types.floor
+
+    # TODO: Place entities.
+
+    # TODO: Place caves.
+
+    # TODO: Place tent (should be w/in 3 tile radius of player)
 
     return dungeon

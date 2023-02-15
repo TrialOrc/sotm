@@ -23,7 +23,7 @@ background_image = Image.open(Path("data/menu_background.png"))
 if background_image.format != "RGB":
     background_image = background_image.convert("RGB")
 
-# Losd the title text.
+# Load the title text.
 title_text_file = open("data/SotM.txt", "r", encoding="UTF-8")
 title_text = title_text_file.read()
 title_text_file.close()
@@ -52,7 +52,7 @@ def new_game() -> Engine:
         map_height=map_height,
     )
 
-    engine.game_world.generate_floor()
+    engine.game_world.generate_overworld()
     engine.update_fov()
 
     engine.message_log.add_message("Strike the earth!", color.welcome_text)
@@ -66,7 +66,8 @@ def new_game() -> Engine:
     player.inventory.items.append(dagger)
     player.equipment.toggle_equip(dagger, add_message=False)
 
-    player.inventory.items.append(dagger, add_message=False)
+    player.inventory.items.append(leather_armor)
+    player.equipment.toggle_equip(leather_armor, add_message=False)
 
     return engine
 

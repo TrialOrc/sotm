@@ -35,25 +35,34 @@ def show(tiles: NDArray[Any]) -> None:
 
 noise = tcod.noise.Noise(
     dimensions=2,
-    algorithm=tcod.noise.Algorithm.WAVELET,
-    implementation=tcod.noise.Implementation.TURBULENCE,
+    algorithm=tcod.noise.Algorithm.SIMPLEX,
+    implementation=tcod.noise.Implementation.FBM,
+    lacunarity=3.0,
+    octaves=1.5,
     seed=69
     )
 
+
 if __name__ == "__main__":
     WIDTH, HEIGHT = 120, 28
-    INITIAL_CHANCE = 0.48  # Initial wall chance.
-    # ? Figure out how to get mid-range for INITIAL_CHANCE
+    INITIAL_CHANCE = 0.42  # Initial wall chance.
+    INITIAL_RANGE = INITIAL_CHANCE / 2
+    INITIAL_MIN = 0.5 - INITIAL_RANGE
+    INITIAL_MAX = 0.5 + INITIAL_RANGE
     CONVOLVE_STEPS = 1
     WALL_RULE = 6
-    noise_map = noise[tcod.noise.grid(shape=(WIDTH, HEIGHT), scale=0.25)]
-    # noise_map = (noise_map + 1) * 0.5
+    noise_map = noise[tcod.noise.grid(shape=(WIDTH, HEIGHT), scale=0.25,)]
+    noise_map = (noise_map + 1) * 0.5
+    print(noise_map.min(), noise_map.max())
     # 0: wall, 1: floor
-    tiles: NDArray[np.bool_] = noise_map < INITIAL_CHANCE
+    tiles: NDArray[np.bool_] = np.all([noise_map <= INITIAL_MAX, noise_map >= INITIAL_MIN], axis=0)
+    # tiles: NDArray[np.bool_] = noise_map <= INITIAL_CHANCE
+    print(f"Walls: {np.count_nonzero(~tiles)}")
+    print(noise_map.flags)
     for _ in range(CONVOLVE_STEPS):
         tiles = convolve(tiles, wall_rule=WALL_RULE)
-        tiles[[0, -1], :] = 0  # Ensure surrounding wall.
-        tiles[:, [0, -1]] = 0
+    tiles[[0, -1], :] = 0  # Ensure surrounding wall.
+    tiles[:, [0, -1]] = 0
     show(tiles)
     # print(noise._seed())
     # print(noise_map.min(), noise_map.max())

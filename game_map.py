@@ -20,7 +20,7 @@ class GameMap:
         self.engine = engine
         self.width, self.height = width, height
         self.entities = set(entities)
-        self.tiles = np.full((width, height), fill_value=tile_types.wall, order="F")
+        self.tiles = np.full((width, height), fill_value=tile_types.floor, order="F")
 
         self.visible = np.full(
             (width, height), fill_value=False, order="F"
@@ -133,12 +133,21 @@ class GameWorld:
     def generate_floor(self) -> None:
         from procgen import generate_dungeon
 
-        self.current_floor += 1
+        self.current_floor += 1  # ? current_floor could = the player's level so every time a cave is generated it is on level w/ the player.
 
         self.engine.game_map = generate_dungeon(
             max_rooms=self.max_rooms,
             room_min_size=self.room_min_size,
             room_max_size=self.room_max_size,
+            map_width=self.map_width,
+            map_height=self.map_height,
+            engine=self.engine,
+        )
+
+    def generate_overworld(self) -> None:
+        from procgen import generate_overworld
+
+        self.engine.game_map = generate_overworld(
             map_width=self.map_width,
             map_height=self.map_height,
             engine=self.engine,
