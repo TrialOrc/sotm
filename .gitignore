@@ -1,10 +1,12 @@
 # Saved games
 /sav/*.sav
 
-# Cache
+## Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
-/components/__pycache__/
+*.py[cod]
 *.pyc
+*$py.class
 
 # VSCode
 .vscode/

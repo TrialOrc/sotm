@@ -1,5 +1,6 @@
 from components.ai import HostileEnemy, NoAI, HauntedTree
-from components import consumable
+from components import consumable, equippable
+from components.equipment import Equipment
 from components.fighter import Fighter
 from components.inventory import Inventory
 from components.level import Level
@@ -11,9 +12,10 @@ player = Actor(
     color=(255, 255, 255),
     name="Player",
     ai_cls=HostileEnemy,
-    fighter=Fighter(hp=30, defense=2, power=5),
+    equipment=Equipment(),
+    fighter=Fighter(hp=30, base_defense=1, base_power=2),
     inventory=Inventory(capacity=26),
-    level=Level(level_up_base=200)
+    level=Level(level_up_base=200),
 )
 
 orc = Actor(
@@ -21,7 +23,8 @@ orc = Actor(
     color=color.orc,
     name="Orc",
     ai_cls=HostileEnemy,
-    fighter=Fighter(hp=10, defense=0, power=3),
+    equipment=Equipment(),
+    fighter=Fighter(hp=10, base_defense=0, base_power=3),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=35),
 )
@@ -30,7 +33,8 @@ troll = Actor(
     color=color.troll,
     name="Troll",
     ai_cls=HostileEnemy,
-    fighter=Fighter(hp=16, defense=1, power=4),
+    equipment=Equipment(),
+    fighter=Fighter(hp=16, base_defense=1, base_power=4),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=100),
 )
@@ -39,10 +43,11 @@ rubberduck = Actor(
     color=color.duck,
     name="Rubber Duck",
     ai_cls=NoAI,
-    fighter=Fighter(hp=1, defense=0, power=0),
+    equipment=Equipment(),
+    fighter=Fighter(hp=1, base_defense=0, base_power=0),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=0),
-).blocks_movement = False
+)
 
 hauntedtree = Trap(
     char="♠",
@@ -84,4 +89,30 @@ lightning_scroll = Item(
     color=color.lightning_scroll,
     name="Lightning Scroll",
     consumable=consumable.LightningDamageConsumable(damage=20, maximum_range=5),
+)
+
+dagger = Item(
+    char="/",
+    color=color.weapon,
+    name="Dagger",
+    equippable=equippable.Dagger(),
+)
+sword = Item(
+    char="/",
+    color=color.weapon,
+    name="Sword",
+    equippable=equippable.Sword(),
+)
+
+leather_armor = Item(
+    char="[",
+    color=color.armor,
+    name="Leather Armor",
+    equippable=equippable.LeatherArmor(),
+)
+chain_mail = Item(
+    char="[",
+    color=color.armor,
+    name="Chain Mail",
+    equippable=equippable.ChainMail,
 )

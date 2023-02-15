@@ -54,6 +54,10 @@ fireball_scroll = color_palette.getpixel((4, 6))
 health_potion = color_palette.getpixel((3, 3))
 lightning_scroll = color_palette.getpixel((4, 7))
 
+weapon = color_palette.getpixel((6, 1))
+
+armor = color_palette.getpixel((2, 7))
+
 # nprand.randint(0,16)
 # np.random.randint(0,8)
 wall_light = color_palette.getpixel((3, 7))
@@ -61,6 +65,7 @@ wall_dark = color_palette.getpixel((0, 7))
 
 floor_light = color_palette.getpixel((9, 6))
 floor_dark = color_palette.getpixel((15, 0))
+
 
 def colorize_trees(x: float, y: float) -> Tuple[int, int, int]:
     y = int((y * x) * 256)

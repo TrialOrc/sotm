@@ -69,26 +69,31 @@ class SearchAction(Action):
         actor_location_y = self.entity.y
         inventory = self.entity.inventory
         # Add a `checked map` (np.bool((height, width)) where `True` = Checked tiles, `False` = Unchecked tile)
-            # `checked map` should have a method to regenerate checked tiles after time. (More checked tiles = shorter regeneration time)
+        # `checked map` should have a method to regenerate checked tiles after time. (More checked tiles = shorter regeneration time)
         # Add a method to check all spaces surrounding the player. scipy.signal.convolve2d?
         # The following line is used to remove errors, remove when class is built:
         tiles_surrounding_player, tile_not_searched, luck_modifier, random_item = None
-
 
         for tile in tiles_surrounding_player:
             if tile_not_searched:
                 pass
                 # pick a random tile
-                if np.random.random() < 0.5 + luck_modifier:  # Chance to find an item, modified by player's luck.
-                    found_item = random_item()  # Roll from a list of items able to be searched for.
+                if (
+                    np.random.random() < 0.5 + luck_modifier
+                ):  # Chance to find an item, modified by player's luck.
+                    found_item = (
+                        random_item()
+                    )  # Roll from a list of items able to be searched for.
                     found_item.parent = self.entity.inventory  # Add item to inventory.
                     inventory.items.append(found_item)
                     # Update `checked map`
-                    self.engine.message_log.add_message(f"You found a {found_item.name}")
+                    self.engine.message_log.add_message(
+                        f"You found a {found_item.name}"
+                    )
                 else:
                     # Update `checked map`
                     raise exceptions.Impossible("You find nothing.")
-            else: # If all tiles have been checked
+            else:  # If all tiles have been checked
                 raise exceptions.Impossible("You've searched everywhere.")
 
 
@@ -114,12 +119,25 @@ class ItemAction(Action):
 
     def perform(self) -> None:
         """Invoke the item's ability, this cation will be given to provide context."""
-        self.item.consumable.activate(self)
+        if self.item.consumable:
+            self.item.consumable.activate(self)
 
 
 class DropItem(ItemAction):
     def perform(self) -> None:
+        if self.entity.equipment.item_is_equipped(self.item):
+            self.entity.equipment.toggle_equip(self.item)
         self.entity.inventory.drop(self.item)
+
+
+class EquipAction(Action):
+    def __init__(self, entity: Actor, item: Item):
+        super().__init__(entity)
+
+        self.item = item
+
+    def perform(self) -> None:
+        self.entity.equipment.toggle_equip(self.item)
 
 
 class WaitAction(Action):
@@ -181,22 +199,22 @@ class MeleeAction(ActionWithDirection):
             attack_color = color.player_atk
         else:
             attack_color = color.enemy_atk
-        
+
         if damage_dealt == 0:
             self.engine.message_log.add_message(
                 f"{attack_desc} but misses.", attack_color
-                )
+            )
         else:
             if damage_received > 0:
                 self.engine.message_log.add_message(
                     f"{attack_desc} for {damage_received} hp.", attack_color
-                    )
+                )
 
                 target.fighter.hp -= damage_received
             else:
                 self.engine.message_log.add_message(
                     f"{attack_desc} but does no damage.", attack_color
-                    )
+                )
 
 
 class MovementAction(ActionWithDirection):
