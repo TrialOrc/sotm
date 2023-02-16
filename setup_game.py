@@ -53,10 +53,12 @@ def new_game() -> Engine:
     )
 
     engine.game_world.generate_overworld()
+    # TODO: Chunk world here
     engine.update_fov()
 
     engine.message_log.add_message("Strike the earth!", color.welcome_text)
 
+    # Starting equipment:
     dagger = copy.deepcopy(entity_factories.dagger)
     leather_armor = copy.deepcopy(entity_factories.leather_armor)
 

@@ -12,6 +12,7 @@ import tcod
 import entity_factories
 from game_map import GameMap
 import noise_factories
+from snow_map import SnowMap
 import tile_types
 
 
@@ -253,14 +254,15 @@ def generate_overworld(
     """Generate a new dungeon map."""
     player = engine.player
     dungeon = GameMap(engine, map_width, map_height, entities=[player])
+    snow_map = SnowMap(map_width, map_height)
 
-    noise_map = noise_factories.noise_simplex_fbm[tcod.noise.grid(shape=(map_width, map_height), scale=0.25, indexing="ij")]
-    noise_map = (noise_map + 1) * 0.5
-    noise_map: NDArray[np.bool_] = np.all([noise_map <= INITIAL_MAX, noise_map >= INITIAL_MIN], axis=0)
-    noise_map= convolve(noise_map, wall_rule=6)
+    tree_map = noise_factories.noise_simplex_fbm[tcod.noise.grid(shape=(map_width, map_height), scale=0.25, indexing="xy")].transpose()
+    tree_map = (tree_map + 1) * 0.5
+    tree_map: NDArray[np.bool_] = np.all([tree_map <= INITIAL_MAX, tree_map >= INITIAL_MIN], axis=0)
+    tree_map= convolve(tree_map, wall_rule=6)
 
-    # Set tiles to `tile_types.tree` where `noise_map_bool` is False
-    dungeon.tiles[~noise_map] = tile_types.tree
+    # Set tiles to `tile_types.tree` where `tree_map` is False
+    dungeon.tiles[~tree_map] = tile_types.tree
 
     # Find all floor tiles
     floor_coords = np.transpose(np.where(dungeon.tiles == tile_types.floor))
@@ -273,12 +275,15 @@ def generate_overworld(
     player_coord = np.unravel_index(index, dungeon.tiles.shape)
     player.place(*player_coord, dungeon)
 
-    # TODO: Add initial snow fall. Should be a noise array with values from 0-7. Should only cover tile_types.floor
+    
+    dungeon.tiles[tree_map] = tile_types.ground  # Turn all non tree tiles into ground tiles. Since, by default they are floor tiles.
+
+    snow_map.set_snow_levels(dungeon, tree_map)
 
     # TODO: Place entities.
 
-    # TODO: Place caves.
+    # TODO: Place cave entrances.
 
-    # TODO: Place tent (should be w/in 3 tile radius of player)
+    # TODO: Place tent (should be w/in 3 tile radius of player).
 
     return dungeon

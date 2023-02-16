@@ -59,10 +59,11 @@ if __name__ == "__main__":
     # tiles: NDArray[np.bool_] = noise_map <= INITIAL_CHANCE
     print(f"Walls: {np.count_nonzero(~tiles)}")
     print(noise_map.flags)
+    print(tiles.dtype)
     for _ in range(CONVOLVE_STEPS):
         tiles = convolve(tiles, wall_rule=WALL_RULE)
     tiles[[0, -1], :] = 0  # Ensure surrounding wall.
     tiles[:, [0, -1]] = 0
-    show(tiles)
+    # show(tiles)
     # print(noise._seed())
     # print(noise_map.min(), noise_map.max())

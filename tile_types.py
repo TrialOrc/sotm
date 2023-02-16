@@ -1,4 +1,5 @@
 from typing import Tuple
+import random
 
 import numpy as np
 
@@ -39,25 +40,69 @@ SHROUD = np.array((ord(" "), (255, 255, 255), (0, 0, 0)), dtype=graphic_dt)
 floor = new_tile(
     walkable=True,
     transparent=True,
-    dark=(ord(" "), (255, 255, 255), color.floor_dark),
-    light=(ord(" "), (255, 255, 255), color.floor_light),
+    dark=(ord(" "), (255, 255, 255), color.cave_floor_dark),
+    light=(ord(" "), (255, 255, 255), color.cave_floor_light),
 )
 wall = new_tile(
     walkable=False,
     transparent=False,
-    dark=(ord(" "), (255, 255, 255), color.wall_dark),
-    light=(ord(" "), (255, 255, 255), color.wall_light),
+    dark=(ord(" "), (255, 255, 255), color.cave_wall_dark),
+    light=(ord(" "), (255, 255, 255), color.cave_wall_light),
 )
 tree = new_tile(
     walkable=False,
     transparent=False,
-    dark=(ord("♠"), (255, 255, 255), color.floor_dark),
-    light=(ord("♠"), (255, 255, 255), color.floor_light),
+    dark=(ord("♠"), color.tree_dark, color.ground_dark),
+    light=(ord("♠"), color.tree_light, color.ground_light),
+)
+ground = new_tile(
+    walkable=True,
+    transparent=True,
+    dark=(ord(" "), (255, 255, 255), color.ground_dark),
+    light=(ord(" "), (255, 255, 255), color.ground_light),
+)
+
+snow_low = new_tile(
+    walkable=True,
+    transparent=True,
+    dark=(ord("░"), (87, 146, 218), color.ground_dark),
+    light=(ord("░"), (255, 255, 255), color.ground_light),
+)
+snow_med = new_tile(
+    walkable=True,
+    transparent=True,
+    dark=(ord("▒"), (87, 146, 218), color.ground_dark),
+    light=(ord("▒"), (255, 255, 255), color.ground_light),
+)
+snow_high = new_tile(
+    walkable=True,
+    transparent=True,
+    dark=(ord("▓"), (87, 146, 218), color.ground_dark),
+    light=(ord("▓"), (255, 255, 255), color.ground_light),
+)
+snow_max = new_tile(
+    walkable=True,
+    transparent=True,
+    dark=(ord(" "), (87, 146, 218), color.ground_dark),
+    light=(ord(" "), (255, 255, 255), (255, 255, 255)),
+)
+
+water_tile = new_tile(
+    walkable=False,
+    transparent=True,
+    dark=(ord(" "), (255, 255, 255), color.ground_dark),
+    light=(ord(" "), (255, 255, 255), color.ground_light),
+)
+blood_tile = new_tile(
+    walkable=False,
+    transparent=True,
+    dark=(ord(" "), (255, 255, 255), color.ground_dark),
+    light=(ord(" "), (255, 255, 255), color.ground_light),
 )
 
 down_stairs = new_tile(
     walkable=True,
     transparent=True,
-    dark=(ord("∩"), color.wall_dark, color.floor_dark),
-    light=(ord("∩"), color.wall_light, color.floor_light)
+    dark=(ord("∩"), color.cave_wall_dark, color.cave_floor_dark),
+    light=(ord("∩"), color.cave_wall_light, color.cave_floor_light)
 )

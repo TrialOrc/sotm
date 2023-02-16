@@ -23,3 +23,4 @@ noise_simplex_fbm = tcod.noise.Noise(
     lacunarity=3.0,
     octaves=1.5,
     )
+

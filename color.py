@@ -60,11 +60,27 @@ armor = color_palette.getpixel((2, 7))
 
 # nprand.randint(0,16)
 # np.random.randint(0,8)
-wall_light = color_palette.getpixel((3, 7))
-wall_dark = color_palette.getpixel((0, 7))
 
-floor_light = color_palette.getpixel((9, 6))
-floor_dark = color_palette.getpixel((15, 0))
+# Overworld
+tree_light = color_palette.getpixel((2, 1))
+tree_dark = color_palette.getpixel((0, 4))
+
+ground_light = color_palette.getpixel((1, 1))
+ground_dark = color_palette.getpixel((0, 2))
+
+water_light = color_palette.getpixel((4, 3))
+water_dark = color_palette.getpixel((0, 5))
+
+blood_light = color_palette.getpixel((3, 6))
+blood_dark = color_palette.getpixel((1, 7))
+
+
+# Cave
+cave_wall_light = color_palette.getpixel((3, 7))
+cave_wall_dark = color_palette.getpixel((0, 7))
+
+cave_floor_light = color_palette.getpixel((9, 6))
+cave_floor_dark = color_palette.getpixel((15, 0))
 
 
 def colorize_trees(x: float, y: float) -> Tuple[int, int, int]:
