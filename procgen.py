@@ -174,23 +174,6 @@ def tunnel_between(
         yield x, y
 
 
-def convolve(tiles: NDArray[Any], wall_rule: int = 5) -> NDArray[np.bool_]:
-    """
-    from: https://github.com/libtcod/python-tcod/blob/main/examples/cavegen.py
-    
-    Return the next step of the cave generation algorithm.
-
-    `tiles` is the input array. (0: wall, 1: floor)
-
-    If the 3x3 area around a tile (including itself) has `wall_rule` number of
-    walls then the tile will become a wall.
-    """
-    # Use convolve2d, the 2nd input is a 3x3 ones array.
-    neighbors: NDArray[Any] = scipy.signal.convolve2d(tiles == 0, [[1, 1, 1], [1, 1, 1], [1, 1, 1]], "same")
-    next_tiles: NDArray[np.bool_] = neighbors < wall_rule  # Apply the wall rule.
-    return next_tiles
-
-
 def generate_dungeon(
     max_rooms: int,
     room_min_size: int,
@@ -202,6 +185,7 @@ def generate_dungeon(
     """Generate a new dungeon map."""
     player = engine.player
     dungeon = GameMap(engine, map_width, map_height, entities=[player])
+    dungeon.tiles[:] = tile_types.wall
 
     rooms: List[RectangularRoom] = []
 
@@ -246,6 +230,23 @@ def generate_dungeon(
     return dungeon
 
 
+def convolve(tiles: NDArray[Any], wall_rule: int = 5) -> NDArray[np.bool_]:
+    """
+    from: https://github.com/libtcod/python-tcod/blob/main/examples/cavegen.py
+    
+    Return the next step of the cave generation algorithm.
+
+    `tiles` is the input array. (0: wall, 1: floor)
+
+    If the 3x3 area around a tile (including itself) has `wall_rule` number of
+    walls then the tile will become a wall.
+    """
+    # Use convolve2d, the 2nd input is a 3x3 ones array.
+    neighbors: NDArray[Any] = scipy.signal.convolve2d(tiles == 0, [[1, 1, 1], [1, 1, 1], [1, 1, 1]], "same")
+    next_tiles: NDArray[np.bool_] = neighbors < wall_rule  # Apply the wall rule.
+    return next_tiles
+
+
 def generate_overworld(
     map_width: int,
     map_height: int,
@@ -272,9 +273,6 @@ def generate_overworld(
     player_coord = np.random.choice(floor_coords)
 
     index = np.random.choice(floor_coords)
-    player_coord = np.unravel_index(index, dungeon.tiles.shape)
-    player.place(*player_coord, dungeon)
-
     
     dungeon.tiles[tree_map] = tile_types.ground  # Turn all non tree tiles into ground tiles. Since, by default they are floor tiles.
 
@@ -283,6 +281,11 @@ def generate_overworld(
     # TODO: Place entities.
 
     # TODO: Place cave entrances.
+
+    # ? Chunking should probably go here, then place the player in the starting chunk.
+
+    player_coord = np.unravel_index(index, dungeon.tiles.shape)
+    player.place(*player_coord, dungeon)
 
     # TODO: Place tent (should be w/in 3 tile radius of player).
 

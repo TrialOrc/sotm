@@ -4,6 +4,7 @@ from typing import Iterable, Iterator, Optional, TYPE_CHECKING
 
 import numpy as np  # type: ignore
 from tcod.console import Console
+import tcod.camera
 
 from entity import Actor, Item
 import tile_types

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 from math import sqrt
-from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union
+from typing import Dict, Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union
 
 from render_order import RenderOrder
 
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from components.equippable import Equippable
     from components.fighter import Fighter
     from components.inventory import Inventory
-    from components.level import Level
+    from components.level import Skills
     from game_map import GameMap
 
 T = TypeVar("T", bound="Entity")
@@ -96,9 +96,10 @@ class Actor(Entity):
         name: str = "<Unnamed>",
         ai_cls: Type[BaseAI],
         equipment: Equipment,
+        skills: Skills,
         fighter: Fighter,
         inventory: Inventory,
-        level: Level,
+        skill_levels: Dict[str, int] = None,
     ):
         super().__init__(
             x=x,
@@ -115,14 +116,19 @@ class Actor(Entity):
         self.equipment: Equipment = equipment
         self.equipment.parent = self
 
+        self.skills = skills
+        self.skills.parent = self
+
         self.fighter = fighter
         self.fighter.parent = self
+        self.fighter.set_init_hp()
 
         self.inventory = inventory
         self.inventory.parent = self
 
-        self.level = level
-        self.level.parent = self
+        if skill_levels:
+            for skill_name, level in skill_levels.items():
+                self.skills[skill_name].current_level = level
 
     @property
     def is_alive(self) -> bool:

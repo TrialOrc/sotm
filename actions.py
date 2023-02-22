@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+
 from typing import Optional, Tuple, TYPE_CHECKING
 import numpy as np
 import random
@@ -190,9 +192,13 @@ class MeleeAction(ActionWithDirection):
         target = self.target_actor
         if not target:
             raise exceptions.Impossible("Nothing to attack.")
-
         damage_dealt = random.randint(0, self.entity.fighter.power + 1)
+        # logging.debug(f"damage_dealt={damage_dealt}")
         damage_received = max(0, damage_dealt - target.fighter.defense)
+        # logging.debug(f"damage_received={damage_received}")
+        defense_xp = min(
+            (damage_dealt - damage_received), target.fighter.defense
+        )  # TODO: Fix, if the player blocks more damage than is dealt, receive blocked damage XP
 
         attack_desc = f"{self.entity.name.capitalize()} attacks {target.name}"
         if self.entity is self.engine.player:
@@ -211,6 +217,14 @@ class MeleeAction(ActionWithDirection):
                 )
 
                 target.fighter.hp -= damage_received
+
+            if self.entity is not self.engine.player:
+                if not defense_xp == 0:
+                    self.engine.player.skills.add_xp("defense", defense_xp)
+            if self.entity is self.engine.player:
+                if not damage_dealt == 0:
+                    self.engine.player.skills.add_xp("attack", damage_dealt)
+
             else:
                 self.engine.message_log.add_message(
                     f"{attack_desc} but does no damage.", attack_color
@@ -238,6 +252,8 @@ class BumpAction(ActionWithDirection):
     def perform(self) -> None:
         if self.target_actor:
             return MeleeAction(self.entity, self.dx, self.dy).perform()
+
+        # TODO: handle if the player moves into another chunk.
 
         else:
             return MovementAction(self.entity, self.dx, self.dy).perform()

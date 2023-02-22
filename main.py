@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import traceback
 
+import logging
+
 import tcod
 
 import color
@@ -62,4 +64,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    if __debug__:
+        logging.basicConfig(level=logging.DEBUG)
     main()

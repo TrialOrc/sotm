@@ -3,7 +3,7 @@ from components import consumable, equippable
 from components.equipment import Equipment
 from components.fighter import Fighter
 from components.inventory import Inventory
-from components.level import Level
+from components.level import Skills
 from entity import Actor, Item, Trap
 import color
 
@@ -13,9 +13,9 @@ player = Actor(
     name="Player",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=30, base_defense=1, base_power=2),
+    skills=Skills(),
+    fighter=Fighter(),
     inventory=Inventory(capacity=26),
-    level=Level(level_up_base=200),
 )
 
 orc = Actor(
@@ -24,9 +24,10 @@ orc = Actor(
     name="Orc",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=10, base_defense=0, base_power=3),
+    skills=Skills(),
+    fighter=Fighter(),
     inventory=Inventory(capacity=0),
-    level=Level(xp_given=35),
+    skill_levels={"attack": 2},
 )
 troll = Actor(
     char="T",
@@ -34,9 +35,9 @@ troll = Actor(
     name="Troll",
     ai_cls=HostileEnemy,
     equipment=Equipment(),
-    fighter=Fighter(hp=16, base_defense=1, base_power=4),
+    skills=Skills(),
+    fighter=Fighter(),
     inventory=Inventory(capacity=0),
-    level=Level(xp_given=100),
 )
 rubberduck = Actor(
     char="d",
@@ -44,9 +45,9 @@ rubberduck = Actor(
     name="Rubber Duck",
     ai_cls=NoAI,
     equipment=Equipment(),
-    fighter=Fighter(hp=1, base_defense=0, base_power=0),
+    skills=Skills(),
+    fighter=Fighter(),
     inventory=Inventory(capacity=0),
-    level=Level(xp_given=0),
 )
 
 hauntedtree = Trap(

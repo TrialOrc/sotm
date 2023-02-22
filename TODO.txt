@@ -1,0 +1,35 @@
+Map:
+Camera
+Chunk world
+
+Dungeon:
+Save overworld.
+add caves/dungeons to overworld map.
+add going up.
+
+FOV:
+Variable FOV
+
+Entities:
+Add more entities:
+    -You
+    -Uoy
+    -rabbit
+    -wolf
+    -bear (Cave only)
+    -bear traps 
+
+Interface:
+implement weater
+implement sanity
+
+Items:
+implement searching
+add items
+add hunting rifle
+
+level:
+implement skills. (Attack, Defense, and HP are implemented. Implement more)
+
+gear:
+add clothing + layers

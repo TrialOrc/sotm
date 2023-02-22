@@ -18,3 +18,4 @@ class BaseComponent:
     @property
     def engine(self) -> Engine:
         return self.gamemap.engine
+

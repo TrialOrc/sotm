@@ -1,25 +1,35 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Dict, TypeVar, Union, TYPE_CHECKING
 
 from components.base_components import BaseComponent
 
 if TYPE_CHECKING:
     from entity import Actor
 
+T = TypeVar("T", bound="Skill")
 
-# TODO: Break leveling into invdividual skills.
-class Level(BaseComponent):
-    parent: Actor
+
+class Skill(BaseComponent):
+    parent: Skills
+
+    name: str
+    current_level: int
+    current_xp: int
+    level_up_base: int
+    level_up_factor: int
+    xp_given: int
 
     def __init__(
         self,
+        name: str,
         current_level: int = 1,
         current_xp: int = 0,
-        level_up_base: int = 0,
-        level_up_factor: int = 150,
+        level_up_base: int = 500,
+        level_up_factor: int = 100,
         xp_given: int = 0,
     ):
+        self.name = name
         self.current_level = current_level
         self.current_xp = current_xp
         self.level_up_base = level_up_base
@@ -40,36 +50,49 @@ class Level(BaseComponent):
 
         self.current_xp += xp
 
-        self.engine.message_log.add_message(f"You gain {xp} experience points.")
-
-        if self.requires_level_up:
-            self.engine.message_log.add_message(
-                f"You advance to level {self.current_level + 1}!"
-            )
-
     def increase_level(self) -> None:
         self.current_xp -= self.experience_to_next_level
 
         self.current_level += 1
 
-    def increase_max_hp(self, amount: int = 20) -> None:
-        self.parent.fighter.max_hp += amount
-        self.parent.fighter.hp += amount
 
-        self.engine.message_log.add_message("Your health improves!")
+class Skills(BaseComponent):
+    parent: Actor
 
-        self.increase_level
+    def __init__(self):
+        skills: Dict[str, Skill] = {
+            "attack": Skill("Attack"),
+            "strength": Skill("Strength"),
+            "defense": Skill("Defense"),
+            "hp": Skill("HP"),
+            "woodcutting": Skill("Woodcutting"),
+            "cooking": Skill("Cooking"),
+            "scavenging": Skill("Scavenging"),
+        }
+        self.skills = skills
+        self.skills = {name: cls for name, cls in self.skills.items()}
 
-    def increase_power(self, amount: int = 1) -> None:
-        self.parent.fighter.base_power += amount
+    def __getitem__(self, key: str) -> Union[Skill, None]:
+        return self.skills.get(key)
 
-        self.engine.message_log.add_message("You feel stronger!")
+    def get_level(self, skill_name: str) -> int:
+        skill = self.skills.get(skill_name)
+        return skill.current_level if skill else 0
 
-        self.increase_level()
+    def list_skill_names(self):
+        return list(self.skills.keys())
 
-    def increase_defense(self, amount: int = 1) -> None:
-        self.parent.fighter.base_defense += amount
+    def add_xp(self, skill_name: str, xp: int):
+        skill = self.skills.get(skill_name)
+        if skill:
+            skill.add_xp(xp)
+            self.engine.message_log.add_message(
+                f"You gain {xp} {skill.name} experience points."
+            )
 
-        self.engine.message_log.add_message("Your movements are getting swifter!")
-
-        self.increase_level()
+            if skill.requires_level_up:
+                self.engine.message_log.add_message(
+                    f"Your {skill.name} skill advances to level {skill.current_level + 1}!"
+                )
+                if not self.current_level == 20:
+                    skill.increase_level()

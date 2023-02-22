@@ -52,8 +52,8 @@ def new_game() -> Engine:
         map_height=map_height,
     )
 
-    engine.game_world.generate_overworld()
-    # TODO: Chunk world here
+    engine.game_world.generate_floor()
+    # engine.game_map = engine.game_world.get_chunk(0)  # Use the first chunk as the active game map
     engine.update_fov()
 
     engine.message_log.add_message("Strike the earth!", color.welcome_text)
