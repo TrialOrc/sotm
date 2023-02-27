@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 from math import sqrt
-from typing import Dict, Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Dict, Optional, Tuple, Type, TypeVar, Union
 
 from render_order import RenderOrder
 
@@ -99,7 +99,7 @@ class Actor(Entity):
         skills: Skills,
         fighter: Fighter,
         inventory: Inventory,
-        skill_levels: Dict[str, int] = None,
+        skill_levels: Optional[Dict[str, int]] = None,
     ):
         super().__init__(
             x=x,

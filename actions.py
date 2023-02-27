@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import logging
-
-from typing import Optional, Tuple, TYPE_CHECKING
-import numpy as np
 import random
+from typing import TYPE_CHECKING, Optional, Tuple
+
+import numpy as np
 
 import color
 import exceptions
@@ -221,6 +220,7 @@ class MeleeAction(ActionWithDirection):
             if self.entity is not self.engine.player:
                 if not defense_xp == 0:
                     self.engine.player.skills.add_xp("defense", defense_xp)
+                    self.engine.player.skills.add_xp("hp", damage_dealt)
             if self.entity is self.engine.player:
                 if not damage_dealt == 0:
                     self.engine.player.skills.add_xp("attack", damage_dealt)

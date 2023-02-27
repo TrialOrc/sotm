@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-import traceback
-
 import logging
+import traceback
 
 import tcod
 
@@ -46,7 +45,7 @@ def main() -> None:
                     for event in tcod.event.wait():
                         context.convert_event(event)
                         handler = handler.handle_events(event)
-                except Exception:  # Handle exeptions in game.
+                except Exception:  # Handle exceptions in game.
                     traceback.print_exc()  # Print error to stderr.
                     # Then print the error to the message log.
                     if isinstance(handler, input_handlers.EventHandler):

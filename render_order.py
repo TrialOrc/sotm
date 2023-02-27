@@ -5,4 +5,4 @@ class RenderOrder(Enum):
     CORPSE = auto()
     ITEM = auto()
     ACTOR = auto()
-    BUILDING = auto()
+    BUILDING = auto()  # Not Implemented

@@ -30,7 +30,7 @@ title_text_file.close()
 
 
 def new_game() -> Engine:
-    """Return a brand new game sission as an Engine instance."""
+    """Return a brand new game session as an Engine instance."""
 
     map_width = 60
     map_height = 35
@@ -52,8 +52,7 @@ def new_game() -> Engine:
         map_height=map_height,
     )
 
-    engine.game_world.generate_floor()
-    # engine.game_map = engine.game_world.get_chunk(0)  # Use the first chunk as the active game map
+    engine.game_world.generate_overworld()
     engine.update_fov()
 
     engine.message_log.add_message("Strike the earth!", color.welcome_text)

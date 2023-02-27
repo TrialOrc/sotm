@@ -1,11 +1,11 @@
-from components.ai import HostileEnemy, NoAI, HauntedTree
+import color
 from components import consumable, equippable
+from components.ai import HauntedTree, HostileEnemy, NoAI
 from components.equipment import Equipment
 from components.fighter import Fighter
 from components.inventory import Inventory
 from components.level import Skills
 from entity import Actor, Item, Trap
-import color
 
 player = Actor(
     char="@",
@@ -39,7 +39,7 @@ troll = Actor(
     fighter=Fighter(),
     inventory=Inventory(capacity=0),
 )
-rubberduck = Actor(
+rubber_duck = Actor(
     char="d",
     color=color.duck,
     name="Rubber Duck",
@@ -50,7 +50,7 @@ rubberduck = Actor(
     inventory=Inventory(capacity=0),
 )
 
-hauntedtree = Trap(
+haunted_tree = Trap(
     char="♠",
     color=(34, 139, 34),
     name="Tree",
@@ -63,7 +63,7 @@ hauntedtree = Trap(
 corpse = Item(
     char="%",
     color=color.corpse,
-    name=None,  # f"reamains of {self.parent.name}"
+    name="<Unnamed>",  # f"remains of {self.parent.name}"
     consumable=consumable.HealingConsumable(amount=1),
 )
 
@@ -115,5 +115,5 @@ chain_mail = Item(
     char="[",
     color=color.armor,
     name="Chain Mail",
-    equippable=equippable.ChainMail,
+    equippable=equippable.ChainMail(),
 )

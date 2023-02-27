@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, TypeVar, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, TypeVar, Union
 
 from components.base_components import BaseComponent
 
@@ -11,7 +11,7 @@ T = TypeVar("T", bound="Skill")
 
 
 class Skill(BaseComponent):
-    parent: Skills
+    parent: Actor
 
     name: str
     current_level: int
@@ -25,8 +25,8 @@ class Skill(BaseComponent):
         name: str,
         current_level: int = 1,
         current_xp: int = 0,
-        level_up_base: int = 500,
-        level_up_factor: int = 100,
+        level_up_base: int = 50,
+        level_up_factor: int = 10,
         xp_given: int = 0,
     ):
         self.name = name
@@ -94,5 +94,5 @@ class Skills(BaseComponent):
                 self.engine.message_log.add_message(
                     f"Your {skill.name} skill advances to level {skill.current_level + 1}!"
                 )
-                if not self.current_level == 20:
+                if not skill.current_level == 20:
                     skill.increase_level()

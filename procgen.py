@@ -1,26 +1,26 @@
 from __future__ import annotations
 
 import random
-from typing import Any, Dict, Iterator, List, Tuple, TYPE_CHECKING
-
-# import numpy as np
+from typing import TYPE_CHECKING, Any, Dict, Iterator, List, Tuple
 
 import numpy as np
 import scipy.signal  # type: ignore
 import tcod
 
 import entity_factories
-from game_map import GameMap
 import noise_factories
-from snow_map import SnowMap
 import tile_types
+from game_map import GameMap
+from snow_map import SnowMap
 
+# import numpy as np
 
 
 if TYPE_CHECKING:
+    from numpy.typing import NDArray
+
     from engine import Engine
     from entity import Entity
-    from numpy.typing import NDArray
 
 
 # (floor number, number of items/monsters)
@@ -233,7 +233,7 @@ def generate_dungeon(
 def convolve(tiles: NDArray[Any], wall_rule: int = 5) -> NDArray[np.bool_]:
     """
     from: https://github.com/libtcod/python-tcod/blob/main/examples/cavegen.py
-    
+
     Return the next step of the cave generation algorithm.
 
     `tiles` is the input array. (0: wall, 1: floor)
@@ -242,7 +242,9 @@ def convolve(tiles: NDArray[Any], wall_rule: int = 5) -> NDArray[np.bool_]:
     walls then the tile will become a wall.
     """
     # Use convolve2d, the 2nd input is a 3x3 ones array.
-    neighbors: NDArray[Any] = scipy.signal.convolve2d(tiles == 0, [[1, 1, 1], [1, 1, 1], [1, 1, 1]], "same")
+    neighbors: NDArray[Any] = scipy.signal.convolve2d(
+        tiles == 0, [[1, 1, 1], [1, 1, 1], [1, 1, 1]], "same"
+    )
     next_tiles: NDArray[np.bool_] = neighbors < wall_rule  # Apply the wall rule.
     return next_tiles
 
@@ -257,10 +259,14 @@ def generate_overworld(
     dungeon = GameMap(engine, map_width, map_height, entities=[player])
     snow_map = SnowMap(map_width, map_height)
 
-    tree_map = noise_factories.noise_simplex_fbm[tcod.noise.grid(shape=(map_width, map_height), scale=0.25, indexing="xy")].transpose()
-    tree_map = (tree_map + 1) * 0.5
-    tree_map: NDArray[np.bool_] = np.all([tree_map <= INITIAL_MAX, tree_map >= INITIAL_MIN], axis=0)
-    tree_map= convolve(tree_map, wall_rule=6)
+    noise_map = noise_factories.noise_simplex_fbm[
+        tcod.noise.grid(shape=(map_width, map_height), scale=0.25, indexing="xy")
+    ].transpose()
+    noise_map = (noise_map + 1) * 0.5
+    tree_map: NDArray[np.bool_] = np.all(
+        [noise_map <= INITIAL_MAX, noise_map >= INITIAL_MIN], axis=0
+    )
+    tree_map = convolve(tree_map, wall_rule=6)
 
     # Set tiles to `tile_types.tree` where `tree_map` is False
     dungeon.tiles[~tree_map] = tile_types.tree
@@ -268,13 +274,12 @@ def generate_overworld(
     # Find all floor tiles
     floor_coords = np.transpose(np.where(dungeon.tiles == tile_types.floor))
     floor_coords = np.ravel_multi_index(floor_coords.T, dungeon.tiles.shape)
-    
-    # Select a random floor tile and place the player there
-    player_coord = np.random.choice(floor_coords)
 
-    index = np.random.choice(floor_coords)
-    
-    dungeon.tiles[tree_map] = tile_types.ground  # Turn all non tree tiles into ground tiles. Since, by default they are floor tiles.
+    dungeon.tiles[
+        tree_map
+    ] = (
+        tile_types.ground
+    )  # Turn all non tree tiles into ground tiles. Since, by default they are floor tiles.
 
     snow_map.set_snow_levels(dungeon, tree_map)
 
@@ -284,6 +289,8 @@ def generate_overworld(
 
     # ? Chunking should probably go here, then place the player in the starting chunk.
 
+    # Select a random floor tile and place the player there
+    index = np.random.choice(floor_coords)
     player_coord = np.unravel_index(index, dungeon.tiles.shape)
     player.place(*player_coord, dungeon)
 

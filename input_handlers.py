@@ -1,15 +1,14 @@
 from __future__ import annotations
 
 import os
-
-from typing import Callable, Optional, Tuple, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Callable, Optional, Tuple, Union
 
 import tcod.event
 
 import actions
-from actions import Action, BumpAction, PickupAction, WaitAction
 import color
 import exceptions
+from actions import Action, BumpAction, PickupAction, WaitAction
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -66,7 +65,7 @@ MainGameEventHandler will become the active handler.
 
 class BaseEventHandler(tcod.event.EventDispatch[ActionOrHandler]):
     def handle_events(self, event: tcod.event.Event) -> BaseEventHandler:
-        """Handle an event and retrun the next active event handler."""
+        """Handle an event and return the next active event handler."""
         state = self.dispatch(event)
         if isinstance(state, BaseEventHandler):
             return state
@@ -206,16 +205,16 @@ class CharacterScreenEventHandler(AskUserEventHandler):
             bg=(0, 0, 0),
         )
 
-        console.print(x=x + 1, y=y + 1, string=f"Skill", alignment=tcod.LEFT)
+        console.print(x=x + 1, y=y + 1, string="Skill", alignment=tcod.LEFT)
 
-        console.print(x=width // 2 - 1, y=y + 1, string=f"Lv.", alignment=tcod.CENTER)
+        console.print(x=width // 2 - 1, y=y + 1, string="Lv.", alignment=tcod.CENTER)
 
-        console.print(x=width - 2, y=y + 1, string=f"XP", alignment=tcod.RIGHT)
+        console.print(x=width - 2, y=y + 1, string="XP", alignment=tcod.RIGHT)
 
         console.print(
             x=x + 1,
             y=y + 3,
-            string=f"\n".join(
+            string="\n".join(
                 [
                     name.capitalize() if name != "hp" else "HP"
                     for name in self.engine.player.skills.list_skill_names()
@@ -227,7 +226,7 @@ class CharacterScreenEventHandler(AskUserEventHandler):
         console.print(
             x=width // 2,
             y=y + 3,
-            string=f"\n".join(
+            string="\n".join(
                 str(skill.current_level)
                 for skill in self.engine.player.skills.skills.values()
             ),
@@ -237,7 +236,7 @@ class CharacterScreenEventHandler(AskUserEventHandler):
         console.print(
             x=width - 7,
             y=y + 3,
-            string=f"\n".join(
+            string="\n".join(
                 str(skill.current_xp)
                 for skill in self.engine.player.skills.skills.values()
             ),
@@ -247,14 +246,14 @@ class CharacterScreenEventHandler(AskUserEventHandler):
         console.print(
             x=width - 6,
             y=y + 3,
-            string=f"\n".join("/" * len(self.engine.player.skills.list_skill_names())),
+            string="\n".join("/" * len(self.engine.player.skills.list_skill_names())),
             alignment=tcod.CENTER,
         )
 
         console.print(
             x=width - 2,
             y=y + 3,
-            string=f"\n".join(
+            string="\n".join(
                 str(skill.experience_to_next_level)
                 for skill in self.engine.player.skills.skills.values()
             ),
@@ -488,7 +487,7 @@ class AreaRangedAttackHandler(SelectIndexHandler):
 
         x, y = self.engine.mouse_location
 
-        # Draw a rectangle around the targeted area, so the plaer can see the affected tiles.
+        # Draw a rectangle around the targeted area, so the player can see the affected tiles.
         console.draw_frame(
             x=x - self.radius - 1,
             y=y - self.radius - 1,
@@ -553,7 +552,7 @@ class GameOverEventHandler(EventHandler):
         raise exceptions.QuitWithoutSaving()  # Avoid saving a finished game.
 
     def ev_quit(self, event: tcod.event.Quit) -> None:
-        self.on_quit(event)
+        self.on_quit()
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> None:
         if event.sym == tcod.event.K_ESCAPE:
@@ -575,7 +574,7 @@ class HistoryViewer(EventHandler):
         super().__init__(engine)
         self.log_length = len(engine.message_log.messages)
         self.cursor = self.log_length - 1
-        self.log_console_height = None
+        self.log_console_height = 0
 
     def on_render(self, console: tcod.Console) -> None:
         super().on_render(console)  # Draw the main state as the background.

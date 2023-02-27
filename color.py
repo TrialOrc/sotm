@@ -1,7 +1,6 @@
 from typing import Tuple
 from PIL import Image
 
-# import numpy.random as nprand
 
 color_palette = Image.open("data/ColorPalette.png")
 if color_palette.format != "RGB":
@@ -58,7 +57,7 @@ weapon = color_palette.getpixel((6, 1))
 
 armor = color_palette.getpixel((2, 7))
 
-# nprand.randint(0,16)
+# np.random.randint(0,16)
 # np.random.randint(0,8)
 
 # Overworld

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import actions
 import color
@@ -28,7 +27,7 @@ class Consumable(BaseComponent):
 
     def activate(self, action: actions.ItemAction) -> None:
         """Invoke this items ability.
-        
+
         `action` is the context for this activation.
         """
 
@@ -71,14 +70,16 @@ class ConfusionConsumable(Consumable):
             color.status_effect_applied,
         )
         target.ai = components.ai.ConfusedEnemy(
-            entity=target, previous_ai=target.ai, turns_remanining=self.number_of_turns,
+            entity=target,
+            previous_ai=target.ai,
+            turns_remaining=self.number_of_turns,
         )
         self.consume()
 
 
 class HealingConsumable(Consumable):
     def __init__(self, amount: int):
-        self. amount = amount
+        self.amount = amount
 
     def activate(self, action: actions.ItemAction) -> None:
         consumer = action.entity
@@ -91,7 +92,7 @@ class HealingConsumable(Consumable):
             )
             self.consume()
         else:
-            raise Impossible(f"Your health is already full.")
+            raise Impossible("Your health is already full.")
 
 
 class FireballDamageConsumable(Consumable):
@@ -127,7 +128,6 @@ class FireballDamageConsumable(Consumable):
         if not targets_hit:
             raise Impossible("There are no targets in the radius.")
         self.consume()
-
 
 
 class LightningDamageConsumable(Consumable):

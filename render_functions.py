@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from typing import Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING, Tuple
 
 import color
 
 if TYPE_CHECKING:
     from tcod import Console
+
     from engine import Engine
     from game_map import GameMap
 
@@ -33,13 +34,11 @@ def render_bar(
             x=0, y=37, width=bar_width, height=1, ch=1, bg=color.bar_filled
         )
 
-    console.print(
-        x=1, y=37, string=f"HP: {current_value}/{maximum_value}"
-    )
+    console.print(x=1, y=37, string=f"HP: {current_value}/{maximum_value}")
 
 
 def render_dungeon_level(
-        console: Console, dungeon_level: int, location: Tuple[int, int]
+    console: Console, dungeon_level: int, location: Tuple[int, int]
 ) -> None:
     """
     Render the level the player is currently on, at the given location.
